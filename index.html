@@ -918,7 +918,7 @@ async function syncFromSupabase() {
   lsSet('meals', MEALS);
 }
     if (pRows?.length)  {
-      const p = pRows.find(r=>r.id==='user');
+      const p = pRows.find(r => r.id === USER_ID);
       if (p) { PROF={...PROF,...p.data.profile}; G={...G,...p.data.goals}; lsSet('profile',PROF); lsSet('goals',G); }
     }
     render();

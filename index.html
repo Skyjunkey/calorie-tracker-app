@@ -617,7 +617,10 @@ async function saveFood() {
   lsSet('foods',FOODS);
  const { error } = await sb.from('foods').upsert([{
   id: food.id,
-  data: food
+ data: {
+  ...food,
+  user_id: USER_ID
+}
 }]);
 
 console.log('INSERT RESULT:', error);

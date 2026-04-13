@@ -233,7 +233,12 @@ async function sbDelete(table, id) {
   const { error } = await sb.from(table).delete().eq('id', id);
   if (error) console.error('sb delete', error);
 }
+let USER_ID = localStorage.getItem('user_id');
 
+if (!USER_ID) {
+  USER_ID = crypto.randomUUID();
+  localStorage.setItem('user_id', USER_ID);
+}
 /* ══════════════════════════════════════════
    APP STATE
 ══════════════════════════════════════════ */

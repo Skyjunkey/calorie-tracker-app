@@ -905,8 +905,18 @@ async function syncFromSupabase() {
     const [fRows, mRows, pRows] = await Promise.all([
       sbGetAll('foods'), sbGetAll('meals'), sbGetAll('profiles'),
     ]);
-    if (fRows?.length)  { FOODS = fRows.map(r=>r.data);  lsSet('foods', FOODS); }
-    if (mRows?.length)  { MEALS = mRows.map(r=>r.data);  lsSet('meals', MEALS); }
+  if (fRows?.length)  {
+  FOODS = fRows
+    .map(r => r.data)
+    .filter(x => x.user_id === USER_ID);
+  lsSet('foods', FOODS);
+}
+   if (mRows?.length)  {
+  MEALS = mRows
+    .map(r => r.data)
+    .filter(x => x.user_id === USER_ID);
+  lsSet('meals', MEALS);
+}
     if (pRows?.length)  {
       const p = pRows.find(r=>r.id==='user');
       if (p) { PROF={...PROF,...p.data.profile}; G={...G,...p.data.goals}; lsSet('profile',PROF); lsSet('goals',G); }

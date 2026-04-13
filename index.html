@@ -758,7 +758,17 @@ function remPhrase(i) { S.profDraft.customPhrases.splice(i,1); render(); }
 
 async function saveProf() {
   PROF={...S.profDraft}; lsSet('profile',PROF); lsSet('goals',G);
-  await sbUpsert('profiles',[{ id:'user', data:{profile:PROF,goals:G} }]);
+const { error } = await sb.from('profiles').upsert([{
+  id: USER_ID,
+  data: {
+    profile: PROF,
+    goals: G
+  }
+}]);
+
+if (error) {
+  console.error('save profile error', error);
+}
   S.profDraft=null; go('dash'); showToast('הפרופיל נשמר ✓');
 }
 

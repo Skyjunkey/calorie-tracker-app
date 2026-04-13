@@ -601,12 +601,13 @@ async function saveFood() {
   if(f.id){ const i=FOODS.findIndex(x=>x.id===f.id); if(i>=0)FOODS[i]=food; else FOODS.push(food); }
   else FOODS.push(food);
   lsSet('foods',FOODS);
- const { error } = await sb.from('foods').insert([{
-  name: food.name,
-  calories: food.cal,
-  protein: food.prot
+ const { error } = await sb.from('foods').upsert([{
+  id: food.id,
+  data: food
 }]);
+
 console.log('INSERT RESULT:', error);
+
 if (error) {
   console.error('save food error', error);
 }

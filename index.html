@@ -474,7 +474,16 @@ async function saveMeal() {
   if(S.editMealId){ const i=MEALS.findIndex(x=>x.id===S.editMealId); if(i>=0)MEALS[i]=meal; else MEALS.push(meal); }
   else MEALS.push(meal);
   lsSet('meals',MEALS);
-  await sbUpsert('meals',[{ id:meal.id, data:meal }]);
+  const { error } = await sb.from('meals').upsert([{
+  id: meal.id,
+  data: meal
+}]);
+
+console.log('MEAL INSERT RESULT:', error);
+
+if (error) {
+  console.error('save meal error', error);
+}
   S.mealForm=null; S.editMealId=null; S.tab='dash'; render(); showToast('הארוחה נשמרה ✓');
 }
 

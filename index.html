@@ -646,9 +646,9 @@ function rFoods() {
   const q=S.foodSearch||''; const list=FOODS.filter(f=>f.name.includes(q));
   return `
 <button class="btn-green" style="margin-bottom:16px" onclick="openFoodForm(null)">+ הוסף מזון חדש</button>
-<div class="fg" style="margin-bottom:16px"><input type="text" placeholder="חפש מזון..." value="${esc(q)}" oninput="S.foodSearch=this.value"></div>
+<div class="fg" style="margin-bottom:16px"><input type="text" placeholder="חפש מזון..." value="${esc(q)}" oninput="updateFoodsSearch(this.value)"></div>
 ${S.foodForm!==null?rFoodForm():''}
-<div class="card" style="padding:20px 20px 6px">
+<div class="card" id="foods-list" style="padding:20px 20px 6px">
   ${list.length===0
     ? `<div class="empty">לא נמצאו מזונות</div>`
     : list.map(f=>`<div class="food-row">
@@ -664,7 +664,30 @@ ${S.foodForm!==null?rFoodForm():''}
       </div>`).join('')}
 </div>`;
 }
+function updateFoodsSearch(value) {
+  S.foodSearch = value;
 
+  const q = S.foodSearch || '';
+  const list = FOODS.filter(f => f.name.includes(q));
+  const container = document.getElementById('foods-list');
+  if (!container) return;
+
+  container.innerHTML = list.length === 0
+    ? `<div class="empty">לא נמצאו מזונות</div>`
+    : list.map(f => `
+        <div class="food-row">
+          <div class="food-row-icon">${ic('food',18,'#4CAF50')}</div>
+          <div class="food-row-body">
+            <div class="food-row-name">${esc(f.name)} <span class="tag-pill">${f.baseAmount}${f.baseUnit==='g'?'g':f.baseUnit==='unit'?"יח'":'מנה'}</span></div>
+            <div class="food-row-meta">${f.cal} קק"ל · ${f.prot||0}g חלבון${f.notes?` · ${esc(f.notes)}`:''}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            ${ibtn('edit',`openFoodForm('${f.id}')`)}
+            ${ibtn('trash',`delFood('${f.id}')`,true)}
+          </div>
+        </div>
+      `).join('');
+}
 /* ══════════════════════════════════════════
    HISTORY
 ══════════════════════════════════════════ */
@@ -948,10 +971,9 @@ syncFromSupabase();
 
 /* expose to window for inline onclick handlers */
 Object.assign(window, {
-  render,
   go, startAdd, editMeal, delMeal, addFood, remFood, stepQty, updQtyDirect, saveMeal,
   openFoodForm, saveFood, delFood, exportData, handleImportFile, confirmImport, cancelImport,
-  addPhrase, remPhrase, saveProf, handleAvatar, S, G, FOODS, MEALS, PROF,
+  addPhrase, remPhrase, saveProf, handleAvatar, updateFoodsSearch, S, G, FOODS, MEALS, PROF,
 });
 </script>
 </body>

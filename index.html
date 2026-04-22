@@ -646,7 +646,7 @@ function rFoods() {
   const q=S.foodSearch||''; const list=FOODS.filter(f=>f.name.includes(q));
   return `
 <button class="btn-green" style="margin-bottom:16px" onclick="openFoodForm(null)">+ הוסף מזון חדש</button>
-<div class="fg" style="margin-bottom:16px"><input type="text" placeholder="חפש מזון..." value="${esc(q)}" oninput="S.foodSearch=this.value;render()"></div>
+<div class="fg" style="margin-bottom:16px"><input type="text" placeholder="חפש מזון..." value="${esc(q)}" oninput="S.foodSearch=this.value"></div>
 ${S.foodForm!==null?rFoodForm():''}
 <div class="card" style="padding:20px 20px 6px">
   ${list.length===0

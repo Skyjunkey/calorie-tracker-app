@@ -521,7 +521,7 @@ function rAdd() {
 
 <div class="sec-hd"><div class="sec-title">בחר מזון</div></div>
 <div class="picker">
-  <div class="picker-search"><input type="text" placeholder="חפש מזון..." value="${esc(f.pickerSearch)}" oninput="S.mealForm.pickerSearch=this.value"></div>
+ <div class="picker-search"><input id="meal-search-input" type="text" placeholder="חפש מזון..." value="${esc(f.pickerSearch)}" oninput="updateMealSearch(this.value)"></div>
   <div class="picker-list">
     ${shown.length===0
       ? `<div class="empty" style="padding:16px">לא נמצאו מזונות</div>`
@@ -646,7 +646,7 @@ function rFoods() {
   const q=S.foodSearch||''; const list=FOODS.filter(f=>f.name.includes(q));
   return `
 <button class="btn-green" style="margin-bottom:16px" onclick="openFoodForm(null)">+ הוסף מזון חדש</button>
-<div class="fg" style="margin-bottom:16px"><input type="text" placeholder="חפש מזון..." value="${esc(q)}" oninput="updateFoodsSearch(this.value)"></div>
+<div class="fg" style="margin-bottom:16px"><input id="foods-search-input" type="text" placeholder="חפש מזון..." value="${esc(q)}" oninput="updateFoodsSearch(this.value)"></div>
 ${S.foodForm!==null?rFoodForm():''}
 <div class="card" id="foods-list" style="padding:20px 20px 6px">
   ${list.length===0
@@ -664,29 +664,34 @@ ${S.foodForm!==null?rFoodForm():''}
       </div>`).join('')}
 </div>`;
 }
-function updateFoodsSearch(value) {
+
+  function updateFoodsSearch(value) {
   S.foodSearch = value;
+  const pos = value.length;
 
-  const q = S.foodSearch || '';
-  const list = FOODS.filter(f => f.name.includes(q));
-  const container = document.getElementById('foods-list');
-  if (!container) return;
+  render();
 
-  container.innerHTML = list.length === 0
-    ? `<div class="empty">לא נמצאו מזונות</div>`
-    : list.map(f => `
-        <div class="food-row">
-          <div class="food-row-icon">${ic('food',18,'#4CAF50')}</div>
-          <div class="food-row-body">
-            <div class="food-row-name">${esc(f.name)} <span class="tag-pill">${f.baseAmount}${f.baseUnit==='g'?'g':f.baseUnit==='unit'?"יח'":'מנה'}</span></div>
-            <div class="food-row-meta">${f.cal} קק"ל · ${f.prot||0}g חלבון${f.notes?` · ${esc(f.notes)}`:''}</div>
-          </div>
-          <div style="display:flex;gap:6px">
-            ${ibtn('edit',`openFoodForm('${f.id}')`)}
-            ${ibtn('trash',`delFood('${f.id}')`,true)}
-          </div>
-        </div>
-      `).join('');
+  requestAnimationFrame(() => {
+    const el = document.getElementById('foods-search-input');
+    if (!el) return;
+    el.focus();
+    try { el.setSelectionRange(pos, pos); } catch {}
+  });
+}
+
+function updateMealSearch(value) {
+  if (!S.mealForm) return;
+  S.mealForm.pickerSearch = value;
+  const pos = value.length;
+
+  render();
+
+  requestAnimationFrame(() => {
+    const el = document.getElementById('meal-search-input');
+    if (!el) return;
+    el.focus();
+    try { el.setSelectionRange(pos, pos); } catch {}
+  });
 }
 /* ══════════════════════════════════════════
    HISTORY
@@ -973,7 +978,7 @@ syncFromSupabase();
 Object.assign(window, {
   go, startAdd, editMeal, delMeal, addFood, remFood, stepQty, updQtyDirect, saveMeal,
   openFoodForm, saveFood, delFood, exportData, handleImportFile, confirmImport, cancelImport,
-  addPhrase, remPhrase, saveProf, handleAvatar, updateFoodsSearch, S, G, FOODS, MEALS, PROF,
+  addPhrase, remPhrase, saveProf, handleAvatar, updateFoodsSearch, updateMealSearch, S, G, FOODS, MEALS, PROF,
 });
 </script>
 </body>

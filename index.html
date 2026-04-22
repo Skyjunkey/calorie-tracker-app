@@ -522,7 +522,7 @@ function rAdd() {
 <div class="sec-hd"><div class="sec-title">בחר מזון</div></div>
 <div class="picker">
  <div class="picker-search"><input id="meal-search-input" type="text" placeholder="חפש מזון..." value="${esc(f.pickerSearch)}" oninput="updateMealSearch(this.value)"></div>
-  <div class="picker-list">
+<div class="picker-list" id="meal-picker-list">
     ${shown.length===0
       ? `<div class="empty" style="padding:16px">לא נמצאו מזונות</div>`
       : shown.slice(0,10).map(fd=>`<div class="picker-row" onclick="addFood('${fd.id}')">
@@ -681,17 +681,33 @@ ${S.foodForm!==null?rFoodForm():''}
 
 function updateMealSearch(value) {
   if (!S.mealForm) return;
+
   S.mealForm.pickerSearch = value;
-  const pos = value.length;
 
-  render();
+  const f = S.mealForm;
+  const shown = FOODS.filter(x =>
+    !f.items.find(i => i.foodId === x.id) &&
+    x.name.includes(f.pickerSearch)
+  );
 
-  requestAnimationFrame(() => {
-    const el = document.getElementById('meal-search-input');
-    if (!el) return;
-    el.focus();
-    try { el.setSelectionRange(pos, pos); } catch {}
-  });
+  const listEl = document.getElementById('meal-picker-list');
+  if (!listEl) return;
+
+  listEl.innerHTML = shown.length === 0
+    ? `<div class="empty" style="padding:16px">לא נמצאו מזונות</div>`
+    : shown.slice(0,10).map(fd => `
+        <div class="picker-row" onclick="addFood('${fd.id}')">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--t1)">${esc(fd.name)}</div>
+            <div style="font-size:12px;color:var(--t3);margin-top:2px">
+              ${fd.cal} קק"ל / ${fd.baseAmount}${fd.baseUnit==='g'?'g':fd.baseUnit==='unit'?"יח'":'מנה'} · ${fd.prot||0}g חלבון
+            </div>
+          </div>
+          <div style="width:28px;height:28px;border-radius:8px;background:var(--gl);display:flex;align-items:center;justify-content:center">
+            ${ic('plus',14,'#4CAF50')}
+          </div>
+        </div>
+      `).join('');
 }
 /* ══════════════════════════════════════════
    HISTORY

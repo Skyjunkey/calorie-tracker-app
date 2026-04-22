@@ -521,7 +521,7 @@ function rAdd() {
 
 <div class="sec-hd"><div class="sec-title">בחר מזון</div></div>
 <div class="picker">
-  <div class="picker-search"><input type="text" placeholder="חפש מזון..." value="${esc(f.pickerSearch)}" oninput="S.mealForm.pickerSearch=this.value;render()"></div>
+  <div class="picker-search"><input type="text" placeholder="חפש מזון..." value="${esc(f.pickerSearch)}" oninput="S.mealForm.pickerSearch=this.value"></div>
   <div class="picker-list">
     ${shown.length===0
       ? `<div class="empty" style="padding:16px">לא נמצאו מזונות</div>`
